@@ -1,0 +1,177 @@
+---
+title: "Lab 2"
+format: html
+editor: visual
+---
+
+Welcome to Lab 2, in this one you will have to clean what is probably the dirtiest data you've encountered so far in your studies.
+
+# A word about the final assignment
+
+Just so you know, for your final assignment, I will expect you to do cleaning like you will do in this lab (though perhaps not on data as bad as the one in this lab).
+
+So try to find a dataset that seems a bit dirty, with missing data, ideally some errors in the variables, and that should be enough. I just want you to do some cleaning and data wrangling.
+
+# Goal
+
+Model the length of stay in emergency services (that is, the time difference between the date and hour of discharge, and the date and hour of entry).
+
+You can use whatever you want: a generalised linear model, decision trees, knn regression, Random Forest, XGBoost, your homecooked neural network...
+
+# Deliverable
+
+-   One or multiple scripts (i.e. your codes)
+
+-   One document detailing all the cleaning you have done and everything that you would consider to be "bad data" in what I gave you
+
+# Data
+
+-   Synthetic emergency data from 8 emergency services (split in 8 files, one per service)
+
+-   Data dictionary
+
+-   Supplementary variable: complexity of diagnostic, to be joined with the data files
+
+-   Number of patients in each service
+
+# Tips
+
+-   Split your code in two files:
+
+    -   One to explore the datasets (you can use a Quarto/RMarkdown file for this)
+
+    -   One in which you do only the necessary wrangling for modelisation
+
+-   The whole point of this lab is to make you do problem solving:
+
+    -   Check the packages documentation and websites
+
+    -   If you are really stuck: Google it, check responses on Stack Overflow
+
+    -   Don't rely too much on AI, especially if you don't understand the solutions they propose
+
+# Useful snippets of code
+
+Don't launch any of these, it's just to illustrate how these work.
+
+## Contextual help
+
+Put your cursor inside the parentheses of str_detect(), press Ctrl and Space (Cmd + Space for Mac users)
+
+```{r}
+library(stringr)
+test_string <- c("aa_1", "aa_2", "bb_6", "dd3")
+test_string %>% str_detect() 
+```
+
+## Importing
+
+Most functions to read data from files begin with `read`.
+
+```{r}
+# A few examples
+read.csv() # Don't use this one though
+read_csv() # Use this one (:
+read_csv2()
+read_excel()
+read_table()
+read # Press Ctrl + Space here to see all functions that begin with read  
+
+read_csv() # Check all the options in those functions, some might be useful...
+```
+
+## Selecting
+
+```{r}
+df <- 
+  df %>% 
+  select(age) # Keep only age
+df <- 
+  df %>% 
+  select(-age) # delete age
+df <- 
+  df %>% 
+  select(c("age", "dob")) # Keep age AND date of birth
+```
+
+## Filtering
+
+```{r}
+df <- 
+  df %>% 
+  filter(age < 150) # One condition: age must be below 150
+df <- 
+  df %>% 
+  filter(age < 150 & arrival_mode == "Bus") # Two conditions: age must be below 150, and arrival mode must be "Bus"
+df <- 
+  df %>% 
+  filter(!(age < 150 & arrival_mode == "Bus")) # ! means inverse: you delete all observations that are below 150 AND that came using the bus
+```
+
+`&` means both conditions must apply
+
+`|` means one or the other condition must apply
+
+Note that, to specify one specific value here, we use `==` and not `=`
+
+## Modifying
+
+```{r}
+df <- 
+  df %>% 
+  mutate(
+    age = age + 10
+  )
+
+# Case_when() is very useful
+df <- 
+  df %>% 
+  mutate(
+    age = case_when(
+      service == "Service 1" ~ age + 10, # Add 10 to the age for the service 1 only
+      service == "Service 2" ~ age + 5, # Add 10 to the age for the service 2 only
+      .default = age # Keep age variable as is for the rest of the data
+    )
+  )
+```
+
+## Distinct
+
+This gets rid of duplicates.
+
+```{r}
+df <- 
+  df %>% 
+  distinct(id)
+```
+
+## Pivot_longer
+
+You will have to use this one somewhere. Good luck. (: <https://tidyr.tidyverse.org/reference/pivot_longer.html>
+
+## Imputation
+
+Some easy mean imputation can be done using case_when()
+
+```{r}
+df <- 
+  df %>% 
+  mutate(
+    is.na(age) ~ mean(age, na.rm = TRUE),
+    .default = age
+  )
+```
+
+You will have to figure out the rest yourselves. You can:
+
+-   Impute the mean according to groups (here, use group_by() before the mutate)
+
+-   Use a linear regression:
+
+    -   Keep only complete data (i.e. filter out the missing data), regress the variable to impute on relevant covariates
+
+    -   Use this trained model to predict the missing data in the full dataset
+
+-   Other methods proposed in the last class (though just doing one may take you a lot of time)
+
+# Password: 4d5\^\$zAP\\\\\~#dDF5
