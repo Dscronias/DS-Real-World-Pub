@@ -6,6 +6,10 @@ editor: visual
 
 Welcome to Lab 2, in this one you will have to clean what is probably the dirtiest data you've encountered so far in your studies.
 
+I won't help you with the programming (unless you are really struggling), but I will give you expert knowledge on the data and give you some more specific tasks.
+
+Do groups of 3-4 and split up your work.
+
 # A word about the final assignment
 
 Just so you know, for your final assignment, I will expect you to do cleaning like you will do in this lab (though perhaps not on data as bad as the one in this lab).
