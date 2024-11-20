@@ -1,0 +1,752 @@
+---
+title: "Exploration"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+# Setup
+
+```{r, include = FALSE}
+library(tidyverse)
+library(glue)
+library(janitor)
+library(readxl)
+library(nnet)
+library(kknn)
+
+if (!dir.exists(file.path("data"))) dir.create("data")
+if (!dir.exists(file.path("data", "processed"))) dir.create(file.path("data", "processed"))
+dir_data_processed <- file.path("data", "processed")
+
+list.files()
+
+set.seed(999)
+```
+
+# Importing
+
+Errors/anomalies on:
+
+-   SU 1: first two rows are to be skipped
+
+-   SU 5 and 9 use ";" as delimiters
+
+-   SU 3 is stored in an .rds file
+
+```{r}
+df_n_patients <- read_csv("number_of_patients.csv")
+df_dict <- read_xlsx("DATA DICTIONARY.xlsx")
+df_complexity <- read_csv("complexity_codes.csv")
+
+# I personally find it easier to put everything in a list
+# But you do you
+df <- list(
+  Batushka = read_csv("data_su1.csv", skip = 2),
+  `Denzel Curry` = read_csv("data_su_denzel_curry.csv"),
+  Luther = read_rds("data_su3.rds"),
+  `La Fève` = read_csv("data_su4.csv"),
+  winnterzuko = read_csv2("data_su5.csv"),
+  Changeline = read_csv("data_su6.csv"),
+  Changeline2 = read_csv("data_su7.csv"),
+  `Crystal Castles` = read_csv("data_su8.csv"),
+  abel31 = read_csv2("data_su9.csv")
+)
+```
+
+# Duplicates
+
+Problems:
+
+-   Too many observations in winnterzuko and Crystal Castles
+
+-   Two Changeline datasets
+
+```{r}
+df %>% 
+  map(nrow) %>% 
+  bind_rows() %>% 
+  pivot_longer(everything(), names_to = "service", values_to = "n_patients_df") %>%
+  left_join(df_n_patients) %>% 
+  mutate(mismatch = n_patients != n_patients_df)
+```
+
+## Changeline
+
+We need to check if the datasets are the same. Maybe one of the file is just a temporary version.
+
+```{r}
+# Maybe the ids are the same in both datasets
+df$Changeline %>% filter(id == max(id))
+df$Changeline2 %>% filter(id == max(id))
+
+# Need to have the same columns in both to do a comparison
+# Only difference is columns with empty names
+keep(colnames(df$Changeline), ~ !.x %in% colnames(df$Changeline2))
+# Percentage of missing values
+df$Changeline %>% 
+  select(starts_with(".")) %>% 
+  summarise(
+    across(
+      everything(),
+      ~ sum(is.na(.x)) / n()
+    )
+  )
+
+# Seems OK
+all.equal(
+  df$Changeline %>% filter(id <= 4196) %>% select(!starts_with(".")),
+  df$Changeline2
+)
+
+
+(
+  # This checks, for each location, if it is identical in both datasets
+  # TRUE if it is identical, FALSE if it is not
+  df$Changeline %>% filter(id <= 4196) %>% select(!starts_with(".")) == 
+  df$Changeline2
+) %>% 
+  as_tibble() %>% 
+  summarise(
+    across(
+      everything(),
+      ~ sum(isFALSE(.x)) # Sum of all the FALSEs, if it is 0, there are no mismatches and the datasets are the same
+    )
+  )
+```
+
+The second Changeline file is just an extract of the first one.
+
+```{r}
+df$Changeline2 <- NULL
+```
+
+## winnterzuko
+
+Just a case of identical patients
+
+```{r}
+df$winnterzuko %>% 
+  distinct(id)
+```
+
+```{r}
+df$winnterzuko <- 
+  df$winnterzuko %>% 
+  distinct(id, .keep_all = TRUE)
+```
+
+## Crystal castles
+
+This one is a bit more complicated: identical patients, but with different ids. We can distinguish most of them using their date of birth and administrative entry dates.
+
+```{r}
+# Different patients...
+df$`Crystal Castles` %>% 
+  distinct(id)
+
+# Checking patients with identical dob
+df$`Crystal Castles` %>% 
+  mutate(
+    dob = glue("{dob_year}/{dob_month}/{dob_day}")
+  ) %>% 
+  group_by(dob) %>% 
+  mutate(n = n()) %>% 
+  filter(n > 1) %>% 
+  arrange(dob) %>%
+  View()
+
+# There seems to be a pattern where: some patients have the same dob (possibly some may be the same person), different entry dates and/or discharge dates, sometimes identical administraty entry dates, and usually a diagnostic for only one row
+
+# Not the best, but I get pretty close: 7313
+df$`Crystal Castles` <-
+  df$`Crystal Castles` %>% 
+  mutate(
+    dob = glue("{dob_year}/{dob_month}/{dob_day}"),
+    adm_entry = glue("{administrative_entry_date} {administrative_entry_hour}")
+  ) %>% 
+  group_by(dob, adm_entry) %>% 
+  mutate(
+    n = n()
+  ) %>% 
+  filter(
+    n == 1 |
+    n > 1 & !is.na(diagnostic)
+  ) %>% 
+  ungroup() %>% 
+  select(-n, -dob, -adm_entry)
+```
+
+# Individual dfs modifications
+
+```{r}
+df %>% 
+  map(
+    colnames
+  )
+```
+
+## Denzel Curry
+
+-   Missing service name
+
+-   Exit method should be named discharge mode
+
+```{r}
+df$`Denzel Curry` <-
+  df$`Denzel Curry` %>% 
+  mutate(
+    service = "Denzel Curry"
+  ) %>% 
+  rename(discharge_mode = exit_method)
+```
+
+## Changeline
+
+-   Columns not in other dataframes
+
+```{r}
+df$Changeline %>% 
+  select(xxz2, starts_with("ccm"), starts_with("."), cmp12)
+
+df$Changeline <- 
+  df$Changeline %>% 
+  select(-xxz2, -starts_with("ccm"), -starts_with("."), -cmp12)
+```
+
+## Crystal Castles
+
+-   Useless column "ok"
+
+```{r}
+df$`Crystal Castles` %>% tabyl(ok)
+
+df$`Crystal Castles` <- 
+  df$`Crystal Castles` %>% 
+  select(-ok)
+```
+
+## abel31
+
+-   Age is in wide format
+
+```{r}
+df_age <- 
+  df$abel31 %>% 
+  select(id, starts_with("age")) %>% 
+  pivot_longer(
+    cols = -id,
+    names_to = "age",
+    values_to = "values"
+  ) %>% 
+  filter(!is.na(values)) %>% 
+  mutate(age = age %>% str_remove("age_") %>% as.numeric()) %>% 
+  select(-values)
+
+df$abel31 <- 
+  df$abel31 %>% 
+  select(-starts_with("age")) %>% 
+  left_join(df_age)
+```
+
+## Winnterzuko
+
+-   Arrival_mode named discharge_mode and vice-versa
+-   Age not integer (could leave it like this, but I don't like it)
+
+```{r}
+df$winnterzuko %>% tabyl(arrival_mode)
+df$winnterzuko %>% tabyl(discharge_mode)
+df$winnterzuko %>% select(age) %>% head(20)
+
+df$winnterzuko <- 
+  df$winnterzuko %>% 
+  rename(discharge_mode = arrival_mode, arrival_mode = discharge_mode) %>% 
+  mutate(age = floor(age))
+
+
+
+```
+
+# Dfs concatenation
+
+Types mismatch:
+
+-   Severity, discharge mode, entry date, discharge date, administrative entry date, entry hour, discharge hour, administrative entry hour ==\> to character (easier to work with at first)
+
+-   DOB year (Luther) ==\> To numeric
+
+```{r}
+df %>% 
+  map(
+    ~ .x %>% tabyl(severity)
+  )
+df %>% 
+  map(
+    ~ .x %>% tabyl(discharge_mode)
+  )
+
+# Sev + discharge_mode to char
+df <- 
+  df %>% 
+  map(
+    ~ .x %>% mutate(
+      across(
+        c("severity", "discharge_mode", "entry_date", "discharge_date",
+          "administrative_entry_date", "entry_hour", "discharge_hour",
+          "administrative_entry_hour"),
+        as.character
+      )
+    )
+  )
+
+# Dob to num
+df$Luther %>% tabyl(dob_year)
+df$Luther <- 
+  df$Luther %>% 
+  mutate(dob_year = as.numeric(dob_year))
+```
+
+```{r}
+df_full <- 
+  df %>% 
+  bind_rows()
+```
+
+# Full df explorations
+
+## Variables creation
+
+```{r}
+# Age + Length of stay
+## Won't be able to recreate the age variable for two emergency services, but these are provided
+## Can recreate the los variable everywhere though
+df_full %>% 
+  group_by(service) %>% 
+  summarise(
+    missing_dob = sum(is.na(dob_year)),
+    missing_age = sum(is.na(age)),
+    missing_entry = sum(is.na(entry_date)),
+    missing_exit = sum(is.na(discharge_date)),
+    n = n()
+  )
+
+df_full <- 
+  df_full %>% 
+  mutate(
+    entry = paste(entry_date, entry_hour, sep = " ") %>% 
+      parse_date_time(orders = "%Y-%m-%d %H:%M:%S"),
+    exit = paste(discharge_date, discharge_hour, sep = " ") %>% 
+      parse_date_time(orders = "%Y-%m-%d %H:%M:%S"),
+    entry_year = year(entry),
+    age = case_when(
+      is.na(age) ~ entry_year - dob_year,
+      .default = age
+    ),
+    los = difftime(exit, entry, units = "mins") %>% as.numeric()
+  ) %>% 
+  select(-c(entry_date, entry_hour, discharge_date, discharge_hour, entry_year))
+
+# Complexity
+df_full %>% 
+  tabyl(diagnostic)
+df_complexity %>% 
+  tabyl(diagnostic)
+## Some diagnostics seem to have dots that should not be there
+df_full <- 
+  df_full %>% 
+  mutate(
+    diagnostic = str_remove(diagnostic, "\\.")
+  ) %>% 
+  left_join(df_complexity)
+```
+
+## Variables checks
+
+```{r}
+# Service
+df_full %>% tabyl(service) # Ok
+
+# Service type
+df_full %>% tabyl(service, service_type)
+df_full %>% 
+  group_by(service) %>% 
+  summarise(
+    p25 = quantile(age, 0.25),
+    p50 = quantile(age, 0.5),
+    mean = mean(age),
+    p75 = quantile(age, 0.75),
+    under18 = sum(age < 18) / n()
+  )
+## Wrongly labeled as a pediatric service. No pediatric services in this dataset
+df_full <- 
+  df_full %>% 
+  mutate(
+    service_type = case_when(
+      service %in% c("Batushka", "Changeline", "Luther") ~ "Adult",
+      .default = "Adult + Pediatric"
+    )
+  )
+
+# Unit
+df_full %>% 
+  tabyl(unit, service) # Idk what to do with it. Well, Anyway.
+
+# Severity
+df_full %>% 
+  tabyl(severity)
+df_full <- 
+  df_full %>% 
+  mutate(
+    severity = case_when(
+      severity == "1 C Seule" ~ "1",
+      severity == "P" ~ NA_character_, # Psychiatric patients, rare, won't bother.
+      severity == "na" ~ NA_character_,
+      .default = severity
+    )
+  )
+## !! Abnormal distributions of severity for abel31 and Changeline
+df_full %>% 
+  filter(!is.na(severity)) %>% 
+  tabyl(severity, service) %>% 
+  adorn_percentages("col") %>% 
+  adorn_pct_formatting(2)
+df_full %>% 
+  filter(!is.na(severity)) %>% 
+  mutate(severity2 = if_else(severity == 3, "1", "0")) %>% 
+  count(severity, severity2, service) %>% 
+  mutate(
+    service = as_factor(service) %>% 
+      fct_relevel("winnterzuko", "Denzel Curry", "La Fève", "Crystal Castles", "Batushka", "Luther", "Changeline", "abel31")
+  ) %>% 
+  group_by(service) %>% 
+  mutate(
+    perc = n / sum(n) * 100
+  ) %>% 
+  ggplot(
+    aes(y = perc, x = severity, fill = severity2)
+  ) + 
+  geom_col() +
+  facet_wrap(~ service, nrow = 2) +
+  scale_fill_manual(values = c("grey", "#EB6E40")) +
+  theme_minimal() +
+  xlab("Severity") + 
+  ylab("Percentage") + 
+  theme(legend.position = "none")
+
+# Discharge mode
+## Lot of recoding to do
+df_full %>% 
+  tabyl(discharge_mode, service)
+df_full <- 
+  df_full %>% 
+  mutate(
+    discharge_mode = case_when(
+      discharge_mode %in% c("9", "D", "Died", "Death") ~ "Died",
+      discharge_mode %in% c("8", "E", "External", "Home", "Went home") ~ "Home",
+      discharge_mode %in% c("6", "H", "H2", "Hosp", "Hospit", "Hospitalised") ~ "Hospitalised",
+      discharge_mode %in% c("7", "Other hospital", "T", "Transfer", "Transfered", "Transfered to other hospital") ~ "Transfered to other hospital",
+      is.na(discharge_mode) | discharge_mode %in% c("na") ~ NA_character_,
+    )
+  )
+# ! Suspiciously low hospitalisation rate for winnterzuko
+df_full %>% 
+  tabyl(discharge_mode, service) %>% 
+  adorn_percentages("col")
+
+# Arrival mode
+df_full %>% 
+  tabyl(arrival_mode)
+df_full <- 
+  df_full %>% 
+  mutate(
+    arrival_mode = case_when(
+      arrival_mode == "SMUR" ~ "Ambulance + life support",
+      arrival_mode == "VSAB" ~ "Ambulance + firefighters",
+      arrival_mode == "na" ~ NA_character_,
+      .default = arrival_mode
+    )
+  )
+# Percentage of helicopters quite high in Luther? 10% is a lot.
+df_full %>% 
+  tabyl(arrival_mode, service) %>% 
+  adorn_percentages("col") %>% 
+  adorn_pct_formatting(2)
+
+# Los
+df_full %>% 
+  group_by(service) %>% 
+  summarise(
+    n = n(),
+    na = sum(is.na(los)),
+    min = min(los),
+    p25 = quantile(los, 0.25),
+    p50 = quantile(los, 0.55),
+    mean = mean(los),
+    p75 = quantile(los, 0.75),
+    max = max(los),
+    over3days = sum(los > 4320),
+    negative = sum(los < 0),
+  )
+df_full <- 
+  df_full %>% 
+  mutate(
+    los = case_when(
+      los < 0 ~ NA_real_,
+      los > 4320 ~ NA_real_, # Stays over 72h are *very* rare, possibly a problem
+      .default = los
+    )
+  )
+df_full %>% 
+  group_by(service) %>% 
+  summarise(
+    n = n(),
+    na = sum(is.na(los), na.rm = TRUE),
+    min = min(los, na.rm = TRUE),
+    p25 = quantile(los, 0.25, na.rm = TRUE),
+    p50 = quantile(los, 0.55, na.rm = TRUE),
+    mean = mean(los, na.rm = TRUE),
+    p75 = quantile(los, 0.75, na.rm = TRUE),
+    max = max(los, na.rm = TRUE),
+    over3days = sum(los > 4320, na.rm = TRUE),
+    negative = sum(los < 0, na.rm = TRUE),
+  )
+##Very skewed
+df_full %>% 
+  ggplot(
+    aes(x = los)
+  ) + geom_density() +
+  facet_wrap(~ service) +
+  theme_minimal()
+
+
+# Discharge anomaly
+## Nothing much to say
+df_full %>% 
+  tabyl(discharge_anomaly, service) %>% 
+  adorn_percentages("col")
+
+# Age
+## Nothing too weird, actually
+df_full %>% 
+  group_by(service) %>% 
+  summarise(
+    n = n(),
+    na = sum(is.na(age)),
+    min = min(age, na.rm = TRUE),
+    p25 = quantile(age, 0.25, na.rm = TRUE),
+    p50 = quantile(age, 0.55, na.rm = TRUE),
+    mean = mean(age, na.rm = TRUE),
+    p75 = quantile(age, 0.75, na.rm = TRUE),
+    max = max(age, na.rm = TRUE),
+    over110 = sum(age > 110),
+    under18 = sum(age < 18) / n()
+  )
+df_full %>% 
+  ggplot(
+    aes(x = age)
+  ) + geom_density() +
+  facet_wrap(~ service)
+
+# Complexity
+## Complexity seems ok
+## See inflated percentage of severity 3
+df_full %>% 
+  group_by(service) %>% 
+  summarise(
+    n = n(),
+    na = sum(is.na(complexity)),
+    min = min(complexity, na.rm = TRUE),
+    p25 = quantile(complexity, 0.25, na.rm = TRUE),
+    p50 = quantile(complexity, 0.55, na.rm = TRUE),
+    mean = mean(complexity, na.rm = TRUE),
+    p75 = quantile(complexity, 0.75, na.rm = TRUE),
+    max = max(complexity, na.rm = TRUE),
+    perc_severity_3 = sum(severity == 3, na.rm = TRUE) / n(),
+    mean_los = mean(los, na.rm = TRUE)
+  )
+```
+
+## Missing values
+
+I will dismiss any service with \>30% of missing values for one of the variables of interest. There is \~90% missing data for the Batushka service; it would be too much of a stretch for imputation.
+
+```{r}
+# Percentages of NAs among variables of interest
+df_to_filter <- 
+  df_full %>% 
+  group_by(service) %>% 
+  summarise(
+    n = n(),
+    across(
+      c("discharge_mode", "arrival_mode", "los", "age", "complexity"),
+      ~ (sum(is.na(.x), na.rm = TRUE) / n()) * 100,
+      .names = "{.col}_na"
+    )
+  )
+
+df_to_filter <- 
+  df_to_filter %>% 
+  filter(
+    if_any(
+      contains("na"),
+      ~ .x > 30
+    )
+  )
+
+df_to_filter
+```
+
+## Service filtering
+
+```{r}
+df_full <- 
+  df_full %>% 
+  filter(
+    !service %in% (df_to_filter %>% pull(service))
+  )
+```
+
+## Imputation
+
+So, first, what order? I would to by increasing number of missing values.
+
+LOS =\> Discharge mode =\> Arrival mode ==\> Complexity
+
+```{r}
+df_full %>% 
+  summarise(
+    n = n(),
+    across(
+      c("discharge_mode", "arrival_mode", "los", "age", "complexity"),
+      ~ (sum(is.na(.x), na.rm = TRUE) / n()) * 100,
+      .names = "{.col}_na"
+    )
+  )
+```
+
+### Length of stay
+
+Very few missing data, I will do simple median imputation by service
+
+```{r}
+df_full %>% 
+  filter(is.na(los))
+
+df_full <- 
+  df_full %>% 
+  group_by(service) %>% 
+  mutate(
+    los = case_when(
+      is.na(los) ~ median(los, na.rm = TRUE),
+      .default = los
+    )
+  ) %>% 
+  ungroup()
+```
+
+### Discharge mode
+
+We impute less than a %. We will use the mode.
+
+```{r}
+df_full %>% 
+  tabyl(discharge_mode)
+
+df_full <- 
+  df_full %>% 
+  mutate(
+    discharge_mode = case_when(
+      is.na(discharge_mode) ~ "Home",
+      .default = discharge_mode
+    )
+  )
+```
+
+### Arrival mode
+
+Arrival mode is a categorical variable with multiple modalities. Let's use a model to impute the missing values.
+
+Since arrival mode has multiple categories, we must use a multinomial logistic model to predict categories for each observation. This type of model computes for each observation, given the regressors, the probability of being in each modality (this is what I do using the predict() function).
+
+Afterwards, I merge back these predicted probabilities into the original dataset to do the imputation : using a case_when() to only modify the missing values, the sample() function randomly selects one of the modalities of arrival_mode given the probabilities calculated in the multinomial logistic regression model.
+
+If you launch this code again, the imputed data will be different (since there is randomness in the imputation process). You could technically repeat that 50, 100, or even 1000 times to create multiple imputed datasets in order to take into account the uncertainty surrounding the "true value" of arrival_mode. That would be a bit too much, here.
+
+```{r}
+df_full
+
+multinom_res <- 
+  df_full %>% 
+  multinom(
+    arrival_mode ~ service + age + discharge_mode,
+    data = .,
+    maxit = 200
+  )
+
+predictions_arrival_mode <- 
+  predict(multinom_res, newdata = df_full, type = "probs") %>% 
+    as_tibble()
+
+df_full <- 
+  df_full %>% 
+  bind_cols(
+    predictions_arrival_mode
+  ) %>% 
+  rowwise() %>% 
+  mutate(
+    arrival_mode = case_when(
+      is.na(arrival_mode) ~ 
+        sample(
+          x = c(
+            "Ambulance", "Ambulance + firefighters", "Ambulance + life support",
+            "Cops", "Helicopter", "Personal"
+          ),
+          size = 1,
+          prob = c(
+            Ambulance, `Ambulance + firefighters`, `Ambulance + life support`,
+            Cops, Helicopter, Personal
+          )
+        ),
+      .default = arrival_mode
+    )
+  ) %>% 
+  ungroup() %>% 
+  select(-c("Ambulance", "Ambulance + firefighters", "Ambulance + life support",
+            "Cops", "Helicopter", "Personal"))
+```
+
+### Complexity
+
+This times, using k-nearest neighbours (with k = 7)
+
+```{r}
+# Split the data: one df is the data without missing values, the other is with all the missing values
+df_full_complete <- 
+  df_full %>% 
+  filter(!is.na(complexity))
+df_full_missing <- 
+  df_full %>% 
+  filter(is.na(complexity))
+
+# Train knn on complete data + predict missing values
+knn_res <- 
+  kknn(
+    factor(complexity, ordered = TRUE) ~ service + age + discharge_mode + arrival_mode,
+    train = df_full_complete,
+    test = df_full_missing,
+    k = 7
+  )
+
+# Build the original dataset back (with the imputed values)
+df_full <- 
+  bind_rows(
+    df_full_complete,
+    df_full_missing %>% 
+      mutate(
+        # This adds the imputed values
+        complexity = as.numeric(knn_res$fitted.values) 
+      )
+  )
+```

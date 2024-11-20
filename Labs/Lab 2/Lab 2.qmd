@@ -66,6 +66,7 @@ Put your cursor inside the parentheses of str_detect(), press Ctrl and Space (Cm
 library(stringr)
 test_string <- c("aa_1", "aa_2", "bb_6", "dd3")
 test_string %>% str_detect() 
+
 ```
 
 ## Importing
