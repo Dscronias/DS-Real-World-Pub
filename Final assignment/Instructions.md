@@ -31,6 +31,15 @@ See **Class 2 and 3**. Please detail what problems you have found in your datase
 
 See **Class 4 and Lab 3**. You can do a R Shiny if you want (use the skeleton we did for Lab 3). If you manage to make it look good, it can be a good deliverable to show to potential recruiters!
 
+## Datasets
+
+Websites where you may find datasets:
+* [Scraped Airbnb data](https://insideairbnb.com/)
+* [UC Irvine ML repo](https://archive.ics.uci.edu/datasets?NumInstances=1000-inf&skip=0&take=10&sort=desc&orderBy=NumHits&search=)
+* [AskAManager Salary Survey](https://docs.google.com/spreadsheets/d/1PXn7AoKOmZ-Za4Bz_-4tfoNfiddrLRQGWunM8F53Th8/edit?resourcekey=&gid=1245463581#gid=1245463581)
+* [Financial well-being survey data](https://www.consumerfinance.gov/data-research/financial-well-being-survey-data/) (great source, don’t forget to download the file codebook, on top of the data)
+* [Data science dojo](https://code.datasciencedojo.com/datasciencedojo/datasets)
+
 ## Grading
 
 Up to 15 points for the final report.
