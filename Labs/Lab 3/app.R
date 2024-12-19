@@ -7,7 +7,6 @@
 #    https://shiny.posit.co/
 #
 
-
 library(shiny)
 library(bslib)
 library(tidyverse)
@@ -15,6 +14,7 @@ library(DT)
 library(plotly)
 
 # Data #########################################################################
+
 df <- 
   tibble(
     x = rnorm(50000),
@@ -25,6 +25,12 @@ df <-
 df2 <- 
   tibble(
     x = 1:100
+  )
+
+df3 <- 
+  tibble(
+    dpt = c("Ain", "Aisne", "Allier", "Basses-Alpes"),
+    region = c("Auverge-Rhône-Alpes", "Hauts-de-France", "Auverge-Rhône-Alpes", "Provence-Alpes-Côte d'Azur")
   )
 
 # User inteface ################################################################
@@ -40,7 +46,7 @@ ui <- page_navbar(
     p("Welcome blablablabla"),
     img(src = "image_1.jpg", height = "554px", width = "554px"),
     
-    # If you want to center an image, put it in a div (it's an HTML thing, also a meme):
+    # If you want to center an image, put it in a div (it's an HTML thing, and also a meme):
     div(
       img(src = "image_1.jpg", height = "554px", width = "554px"),
       # This right below is CSS
@@ -112,13 +118,31 @@ ui <- page_navbar(
   # You can make individual sidebars for each page but it is more complicated
   sidebar = sidebar(
     "Put stuff here",
+    
+    # Slider
     sliderInput(
-      "slider_1",
-      "It's a slider",
+      inputId = "slider_1", # This is the id of your slider
+      label = "It's a slider", # Title
       min = 1, max = 100,
       value = c(1, 100)
     ),
-    open = "closed"
+    
+    # Choice boxes
+    selectInput(
+      "input_region",
+      "Région",
+      choices = c("All", sort(unique(df3$region))),
+      multiple = FALSE,
+      selected = "All"
+    ),
+    selectInput(
+      "input_dpt",
+      "Département",
+      choices = c(sort(unique(df3$dpt))),
+      multiple = TRUE
+    ),
+    
+    open = "closed" # This means the sidebar is closer when you open the app
   ),
   
   # Options
@@ -130,7 +154,7 @@ ui <- page_navbar(
 
 
 # Server #######################################################################
-server <- function(input, output) {
+server <- function(input, output, session) {
   
   ## Reactive objects ##########################################################
   
@@ -142,6 +166,20 @@ server <- function(input, output) {
         x >= input$slider_1[1] & # input$slider_1 is a vector of size 2 (since it is a range)
         x <= input$slider_1[2]
       )
+  })
+  
+  ## Dynamic inputs ############################################################
+  # Let's say you want one of your input/slider/text box to depend on the values of another input
+  # You need to tell explicitly tell Shiny that it must actively observe this input, and change it depending on the other input
+  
+  # This automatically updates departement depending on region selected
+  observe({
+    updateSelectInput(
+      session, # Leave this line as is
+      "input_dpt", # Here, specify the name of the input that gets updated
+      choices = df3 %>% filter(region == input$input_region) %>% pull(dpt) %>% unique() # Specify the new vector of choices for this input
+      # Here, in the filter, we filter according to which region we chose in the input called "input_region"
+    )
   })
   
   ## Tables ####################################################################
