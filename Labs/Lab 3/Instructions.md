@@ -28,6 +28,8 @@ Similar dataset as Lab 2, but I have already cleaned it (no traps this time).
 - An introductory page where you explain what the data is about
   - Put an image
 - The full table
+  - Table must be downloadable
+  - Must be filterable (according to the filters below)
 - Information about ALD patients vs. non-ALD
   - Age
   - Differences in costs
