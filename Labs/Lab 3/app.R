@@ -148,6 +148,8 @@ ui <- page_navbar(
   # Options
   theme = bs_theme(
     # See: https://rstudio.github.io/bslib/articles/theming/index.html
+    # This is where you ca customise the appearance of your app
+    # Big modificatios will require you to know about CSS
     bootswatch = "zephyr" # List of themes: https://bootswatch.com/
   ),
 )
@@ -155,6 +157,10 @@ ui <- page_navbar(
 
 # Server #######################################################################
 server <- function(input, output, session) {
+  
+  ## Themer ####################################################################
+  # Uncomment the next line if you want to look at different themes for your app
+  # bs_themer()
   
   ## Reactive objects ##########################################################
   
