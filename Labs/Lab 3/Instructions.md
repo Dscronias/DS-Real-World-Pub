@@ -6,13 +6,7 @@ I am an annoying client today. I want a web application to see emergency service
 
 Similar dataset as Lab 2, but I have already cleaned it (no traps this time).
 
-**Variables**
-- Region: region where the service is located
-- Service
-- id
-- severity
-
-| Variable | Label | Values | 
+| Variable | Label | Values |
 | ----------- | ----------- | ----------- |
 | region | Region where the service is located | Auvergne-Rhône-Alpes de Provence, Occitanie-sur-Bretagne, Québecorse |
 | service | Name of the emergency service | Autonoesis, Conifère, Griffon, Grylle, Houle, Valdrin, Véhémence |
@@ -28,7 +22,6 @@ Similar dataset as Lab 2, but I have already cleaned it (no traps this time).
 | complexity | Complexity of the patient's disease (i.e. how complex it is to treat) | (less complex) 1 <==> 10 (more complex) |
 | cost | Cost of the stay in the service | Numerical variable |
 | ald | Patient with a long-term illness (affection longue durée) | 1 = yes, 0 = no|
-
 
 ## What I need
 
