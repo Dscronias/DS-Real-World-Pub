@@ -1,0 +1,329 @@
+---
+title: "Class 5"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+## Class 5
+
+## Setup
+
+```{r, include = FALSE}
+library(tidyverse)
+library(janitor)
+library(furrr)
+library(glue)
+library(httr)
+library(future)
+data(mpg)
+mpg
+```
+
+## Parallelism
+
+### Sequential
+
+```{r}
+# Start timer
+start_time <- Sys.time()
+
+# Download files
+file1 <- GET("https://httpbin.org/delay/2")
+file2 <- GET("https://httpbin.org/delay/2")
+
+# End timer
+end_time <- Sys.time()
+print(end_time - start_time)
+```
+
+### Parallel
+
+```{r}
+plan(multisession) # Creates multiple R sessions in the background
+```
+
+```{r}
+# Start timer
+start_time <- Sys.time()
+
+# Define tasks
+file1 <- 
+  future({
+    GET("https://httpbin.org/delay/2")
+  })
+file2 <- 
+  future({
+    GET("https://httpbin.org/delay/2")
+  })
+
+# Resolve tasks and retrieve results
+response1 <- value(file1)
+response2 <- value(file2)
+
+# End timer
+end_time <- Sys.time()
+print(end_time - start_time)
+```
+
+```{r}
+plan(sequential)
+```
+
+## Reformatting
+
+```{r}
+mpg %>% select( displ, hwy ) %>% pivot_longer(
+    cols = c( displ,   hwy ), names_to = "Variable", values_to = "Values"
+  ) %>% group_by(Variable ) %>% 
+  summarise(
+    Min = min(Values), p10=quantile(Values, 0.1), p25=quantile(Values, 0.25), p50 = quantile(Values, 0.50),
+    Mean = mean(Values), p75=quantile(Values, 0.75), p90=quantile( Values, 0.90 ), Max= max(Values)
+  )
+```
+
+## Functions
+
+**Reminder**
+
+```{r}
+squared <- function(a) {
+  a^2
+}
+squared(a = 10)
+```
+
+The code below creates a table with the distribution of continuous variables, stratified on a categorical variable if needed.
+
+Turn this code into a function. The inputs should be:
+
+-   The dataframe
+
+-   Continuous variables
+
+-   Categorical variables
+
+Start slow by allowing just one continuous variable. Then, multiple continuous variables. Then, allow for categorical variables as input.
+
+**Base code**
+
+```{r}
+mpg %>% 
+  select(displ, hwy, model) %>% # Keep continuous variables and categorical vars
+  pivot_longer(
+    cols = c(displ, hwy), # Pivot the continuous variables
+    names_to = "Variable",
+    values_to = "Values"
+  ) %>% 
+  group_by(Variable, model) %>% # Group by variables + categorical variable
+  summarise(
+    Min = min(Values),
+    p10 = quantile(Values, 0.1),
+    p25 = quantile(Values, 0.25),
+    p50 = quantile(Values, 0.50),
+    Mean = mean(Values),
+    p75 = quantile(Values, 0.75),
+    p90 = quantile(Values, 0.90),
+    Max = max(Values)
+  )
+```
+
+```{r}
+
+```
+
+## Debugger
+
+This function does not work. Use browser() function top find where the problem is.
+
+```{r}
+table_round_all <- function(table) {
+  table %>% 
+    mutate(
+      across(
+        everything(),
+        ~ round(.x, 2)
+      )
+    )
+}
+
+create_dist_table <- function(dataset, cont_vars, ...) {
+  table <-
+    dataset %>% 
+    select({{ cont_vars }}, ...)
+  
+  pivoted_table <- 
+    table %>% 
+    pivot_longer(
+      cols = c({{ cont_vars }}),
+      names_to = "Variable",
+      values_to = "Values"
+    )
+  
+  summarised_table <- 
+    pivoted_table %>% 
+    group_by(Variable, ...) %>% 
+    summarise(
+      Min = min(Values),
+      p10 = quantile(Values, 0.1),
+      p25 = quantile(Values, 0.25),
+      p50 = quantile(Values, 0.50),
+      Mean = mean(Values),
+      p75 = quantile(Values, 0.75),
+      p90 = quantile(Values, 0.90),
+      Max = max(Values)
+    )
+  
+  rounded_table <- 
+    summarised_table %>% 
+    table_round_all()
+  
+  rounded_table
+}
+
+mpg %>% 
+  create_dist_table(
+    cont_vars = c(displ, hwy, cty),
+    manufacturer, class
+  )
+```
+
+## Preconditions
+
+The function below does not stop the user from using a character variable as an input. Add a precondition to warn the user that categorical variables are not supported by this function.
+
+```{r}
+
+create_dist_table <- function(dataset, cont_vars, ...) {
+  
+  table <-
+    dataset %>% 
+    select({{ cont_vars }}, ...)
+  
+  pivoted_table <- 
+    table %>% 
+    pivot_longer(
+      cols = c({{ cont_vars }}),
+      names_to = "Variable",
+      values_to = "Values"
+    )
+  
+  summarised_table <- 
+    pivoted_table %>% 
+    group_by(Variable, ...) %>% 
+    summarise(
+      Min = min(Values),
+      p10 = quantile(Values, 0.1),
+      p25 = quantile(Values, 0.25),
+      p50 = quantile(Values, 0.50),
+      Mean = mean(Values),
+      p75 = quantile(Values, 0.75),
+      p90 = quantile(Values, 0.90),
+      Max = max(Values)
+    )
+  
+  rounded_table <- 
+    summarised_table %>% 
+    table_round_all()
+  
+  rounded_table
+}
+
+table_round_all <- function(table) {
+  table %>% 
+    mutate(
+      across(
+        where(is.numeric),
+        ~ round(.x, 2)
+      )
+    )
+}
+
+mpg %>% 
+  create_dist_table(
+    cont_vars = manufacturer
+  )
+```
+
+## Functionals
+
+Use the map and/or the map2 functions to create the tables below in one line of code. Same for the graphs.
+
+```{r}
+# Tabyl
+mpg %>%
+  tabyl(manufacturer)
+mpg %>%
+  tabyl(model)
+mpg %>%
+  tabyl(trans)
+
+# GGplot
+mpg %>% 
+  ggplot(
+    aes(x = displ)
+  ) + 
+  geom_histogram()
+mpg %>% 
+  ggplot(
+    aes(x = cty)
+  ) + 
+  geom_histogram()
+mpg %>% 
+  ggplot(
+    aes(x = hwy)
+  ) + 
+  geom_histogram()
+```
+
+## Futures and furrr
+
+### Setup
+
+```{r}
+ncols <- 1000
+nrows <- 10000
+```
+
+This creates a random dataframe with {ncols} columns and {nrows} rows. You can increase that if you feel like it. Don't overdo it though,
+
+```{r}
+df <- 
+  map(
+    paste("col", 1:ncols, sep = ""),
+    ~ tibble(
+      "{.x}" := 
+        sample(
+          c("a", "b", "c", "d", "e"), size = nrows,
+          replace = TRUE, prob = rep(0.2, 5)
+        )
+    )
+  ) %>% 
+  bind_cols()
+```
+
+### Map
+
+Use map to create a table for each column in the dataframe.
+
+```{r}
+begin_timer <- Sys.time()
+# Write your code here
+end_timer <- Sys.time()
+end_timer - begin_timer
+```
+
+### Future_map
+
+This time, use future_map
+
+```{r}
+plan(multisession, workers = 2) # Replace with your number of cores (or less)
+
+begin_timer <- Sys.time()
+# Write your code here
+end_timer <- Sys.time()
+end_timer - begin_timer
+
+```
