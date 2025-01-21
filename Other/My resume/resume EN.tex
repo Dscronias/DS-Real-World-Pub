@@ -1,0 +1,290 @@
+\documentclass[a4paper]{article}
+    \usepackage{fullpage}
+    \usepackage{amsmath}
+    \usepackage{amssymb}
+    \usepackage{textcomp}
+    \usepackage{ragged2e}
+    %\let\olditem\item
+    %\renewcommand\item{\olditem\justifying}
+    \usepackage{graphicx}    
+	\usepackage{wrapfig}
+	\usepackage{xcolor}
+    \usepackage[hidelinks]{hyperref}
+    \usepackage[utf8]{inputenc}
+    \usepackage[T1]{fontenc}
+    \textheight=10in
+    \pagestyle{empty}
+    \raggedright
+    %\usepackage{Helvet}
+    \usepackage{tikz}
+    %\usepackage{libertine}
+    %\usepackage{times}
+	\usepackage[most]{tcolorbox}
+	%\usepackage{fontspec}
+	\usepackage{comment}
+	\usepackage{enumitem}
+
+%\renewcommand{\encodingdefault}{cg}
+%\renewcommand{\rmdefault}{lgrcmr}
+\renewcommand{\familydefault}{\sfdefault}
+
+% https://tex.stackexchange.com/questions/25249/how-do-i-use-a-particular-font-for-a-small-section-of-text-in-my-document
+% CHANGE FONT
+% PHV IS HELVETICA
+% PAG IS AVANT GARDE
+\renewcommand{\sfdefault}{phv}
+
+\def\bull{\vrule height 0.8ex width .7ex depth -.1ex }
+
+% DEFINITIONS FOR RESUME %%%%%%%%%%%%%%%%%%%%%%%
+
+% Version 1
+%\definecolor{header}{RGB}{52, 89, 149}
+%\definecolor{myc}{RGB}{250, 128, 114}
+%\definecolor{Name}{RGB}{255, 102, 84}
+
+% Version 2 Colourful
+%\definecolor{myc}{RGB}{228, 25, 23}
+%\definecolor{Text}{RGB}{228, 25, 23}
+%\definecolor{Name}{RGB}{228, 25, 23}
+%\definecolor{Link}{RGB}{9, 103, 137}
+%\definecolor{header}{RGB}{9, 103, 137}
+%\definecolor{Paragraph}{RGB}{45,45,45}
+
+% Version 3 Mostly Black
+\definecolor{myc}{RGB}{55,55,55}
+\definecolor{Name}{RGB}{228, 25, 23}
+\definecolor{Text}{RGB}{55,55,55}
+\definecolor{TextHighlight}{RGB}{228, 25, 23}
+\definecolor{Link}{RGB}{92, 189, 0}
+\definecolor{header}{RGB}{45, 45, 45}
+\definecolor{Paragraph}{RGB}{55,55,55}
+\newcommand{\Tag}[1]{\tcbox[
+	%box align = base,
+	%tcbox raise base,
+	nobeforeafter,
+	colback=header!5,
+	colframe=header!15,
+	size=small,
+	left=1pt,
+	right=1pt,
+	boxsep=0pt]
+	{\strut#1}
+}
+
+
+\newcommand{\area} [2] {
+	\vspace*{-9pt}
+	\begin{verse}
+		\textbf{#1}   #2
+	\end{verse}
+}
+
+\newcommand{\ExternalLink}{%
+	\tikz[x=1.2ex, y=1.2ex, baseline=-0.05ex]{% 
+		\begin{scope}[x=1ex, y=1ex]
+			\clip (-0.1,-0.1) 
+			--++ (-0, 1.2) 
+			--++ (0.6, 0) 
+			--++ (0, -0.6) 
+			--++ (0.6, 0) 
+			--++ (0, -1);
+			\path[draw, 
+			line width = 0.5, 
+			rounded corners=0.5] 
+			(0,0) rectangle (1,1);
+		\end{scope}
+		\path[draw, line width = 0.5] (0.5, 0.5) 
+		-- (1, 1);
+		\path[draw, line width = 0.5] (0.6, 1) 
+		-- (1, 1) -- (1, 0.6);
+	}
+}
+
+\newcommand{\lineunder} {
+	\vspace*{-8pt} \\
+	\hspace*{-18pt} {\color{header}{\hrulefill}} \\
+}
+
+\newcommand{\header} [1] {
+	{\hspace*{-18pt}\vspace*{6pt}
+		{\fontfamily{qag}\selectfont \textsc{{\large #1}}}}
+	\vspace*{-6pt} \lineunder
+}
+
+
+\newcommand{\employer} [3] {
+	{ \textbf{#1} (#2)\\ \underline{\textbf{\emph{#3}}}\\  }
+}
+
+\newcommand{\contact} [3] {
+	\vspace*{-10pt}
+	\begin{center}
+		{\Huge \scshape {#1}}\\
+		#2 \\ #3
+	\end{center}
+	\vspace*{-8pt}
+}
+
+\newenvironment{achievements}{
+	\begin{list}
+		{$\bullet$}{\topsep 0pt \itemsep -2pt}}{\vspace*{4pt}
+	\end{list}
+}
+
+\newcommand{\schoolwithcourses} [4] {
+	\textbf{#1} #2 $\bullet$ #3\\
+	#4 \\
+	\vspace*{5pt}
+}
+
+\newcommand{\school} [4] {
+	\textbf{#1} #2 $\bullet$ #3\\
+	#4 \\
+}
+
+%\newcommand{\Tag}[1]{
+%	\tikzmarknode[inner sep=1pt, rounded corners, fill=header!10, draw=header!20]{A}{\strut#1}
+%}
+%\newcommand\Tag[1]{\tikz[baseline]\node[fill=blue!20,inner sep=2pt, anchor=text, rectangle, rounded corners] {\strut#1};}
+
+\newcommand{\TagHidden}[1]{\tcbox[
+	%box align = base,
+	%tcbox raise base,
+	nobeforeafter,
+	colback=white,
+	colframe=white,
+	size=small,
+	left=1pt,
+	right=1pt,
+	boxsep=0pt]
+	{\strut#1}
+}
+
+% FAUX CAPS
+% https://tex.stackexchange.com/questions/55664/fake-small-caps-with-xetex-fontspec
+\newcommand\fauxsc[1]{\fauxschelper#1 \relax\relax}
+\def\fauxschelper#1 #2\relax{%
+	\fauxschelphelp#1\relax\relax%
+	\if\relax#2\relax\else\ \fauxschelper#2\relax\fi%
+}
+\def\Hscale{.90}\def\Vscale{.82}\def\Cscale{1.00}
+\def\fauxschelphelp#1#2\relax{%
+	\ifnum`#1=\lccode`#1\relax\scalebox{\Hscale}[\Vscale]{\char\uccode`#1}\else%
+	\scalebox{\Cscale}[1]{#1}\fi%
+	\ifx\relax#2\relax\else\fauxschelphelp#2\relax\fi}
+
+% END RESUME DEFINITIONS %%%%%%%%%%%%%%%%%%%%%%%
+
+    \begin{document}
+\vspace*{-40pt}
+
+    
+
+%==== Profile ====%
+\vspace*{-10pt}
+
+%\begin{center}
+	{\fontfamily{pag}\selectfont
+	\hspace*{-20pt}
+	{\Huge \scshape{\fontsize{28}{36}\selectfont \textcolor{Name}{D}imitri \textcolor{Name}{S}cronias}} \\
+	\vspace*{3pt}
+	\hspace*{-19pt}
+	{\Large \textsc{\textcolor{header}{\fontsize{18}{24}\selectfont Data Scientist}}}\\
+	%\hspace*{-19pt}
+	%{\Large \textsc{\textcolor{header}{\fontsize{18}{24}\selectfont \fauxsc{Data Analyst}/\fauxsc{Scientist}}}}\\
+	\vspace*{5pt}
+}
+
+{\small
+	\hspace*{-18pt}
+	Marseille $\cdot$
+	% +33 6 79 03 12 10 $\cdot$
+	\href{mailto:dscronias@gmail.com}{dscronias\textcolor{TextHighlight}{@}gmail.com} \\
+	\hspace*{-18pt}
+	\href{https://www.linkedin.com/in/dimitriscronias/}{\includegraphics[width=8px]{LI-In-Bug2_red.png} dimitriscronias} $\cdot$
+	\href{https://github.com/Dscronias}{\includegraphics[width=8px]{GitHub-Mark-64px2_red.png} Dscronias} $\cdot$
+	\href{https://dscronias.github.io}{\includegraphics[width=8px]{world-wide-web.png} dscronias.github.io}
+}\\ 
+%\end{center}
+\vspace*{3pt}
+\hspace*{-18pt}
+3 years of experience in the analysis, interpretation and valorisation of \\
+\hspace*{-18pt}
+quantitative data % for \textcolor{myc}{decision making}
+\hfill \smash{\includegraphics[height = 95px]{head.jpg}} \\
+\vspace{10pt}
+%==== Experience ====%
+\header{\textcolor{header}{Work Experience}}
+\vspace{1mm}
+
+\textbf{Greater Paris University Hospitals} \hfill \textcolor{Paragraph}{Marseille, France}\\
+Biostatistician \hfill \textcolor{Paragraph}{2019--2021}\\
+
+\vspace{1mm}
+\textcolor{Paragraph}{\textcolor{myc}{Involved in statistical studies on vaccine hesitancy}, in collaboration with the main French regional and national actors in public health (ministère des Solidarités et de la Santé, DREES, ARS PACA, ORS PACA...), across \textcolor{TextHighlight}{8 national and international surveys}}
+
+\vspace{-1mm}
+\begin{itemize} \itemsep 1pt
+	\item \textcolor{Paragraph}{\textcolor{TextHighlight}{Data quality control and statistical analysis}: descriptive statistics, construction of indicators, inferential statistics, Machine Learning...}
+	\item \textcolor{Paragraph}{\textcolor{TextHighlight}{Interpretation and communication} of results in the form of reports, presentations and data visualisations for various audiences: scientists, decision-makers, general population...}
+	\item \textcolor{Paragraph}{\textcolor{TextHighlight}{Valorisation through a dozen publications}---including \textcolor{TextHighlight}{6 scientific publications} totalling \textcolor{TextHighlight}{200+ citations}---notably on: the acceptance of Covid-19 vaccines \href{https://www.eurosurveillance.org/content/10.2807/1560-7917.ES.2021.26.3.2002047}{\textcolor{Link}{\ExternalLink}}, the opinions and perceptions about the Covid-19 pandemic \href{https://drees.solidarites-sante.gouv.fr/recherche?text=scronias\&f\%5B0\%5D=themes\%3A22}{\textcolor{Link}{\ExternalLink}}, and vaccine hesitancy among hospital specialists \href{https://www.sciencedirect.com/science/article/pii/S0264410X21008033}{\textcolor{Link}{\ExternalLink}}}
+		
+\end{itemize}
+\textbf{Southeastern Health Regional Observatory} \hfill \textcolor{Paragraph}{Marseille, France}\\
+Statistician (intern) \hfill \textcolor{Paragraph}{2018 \& 2019}\\
+\vspace{1mm}
+	\textcolor{Paragraph}{Statistical analyses on nurses' seasonal influenza self-vaccination practices in Southeastern France \href{https://www.tandfonline.com/doi/full/10.1080/21645515.2019.1587274}{\textcolor{Link}{\ExternalLink}}and the main factors associated with French elders' need for assistance in their activities of daily living}
+\vspace{10pt}
+
+%==== Education ====%
+\header{\textcolor{header}{Education}}
+
+\textbf{DESU Data Science}\hfill \textcolor{Paragraph}{Marseille, France}\\
+Aix-Marseille School of Economics. \textit{Highest Honours} \hfill \textcolor{Paragraph}{2021}\\
+\vspace{2mm}
+
+\textbf{Master in Economics | Economic Policy Analysis}\hfill \textcolor{Paragraph}{Marseille, France}\\
+Aix-Marseille School of Economics. \textit{High Honours} \hfill \textcolor{Paragraph}{2019}\\
+\vspace{2mm}
+
+\header{\textcolor{header}{Language}}
+\vspace*{4pt} \hspace*{-8pt} 
+\begin{tabular}{ l l }
+	French:      & Native                         \\
+	English:   & Bilingual --- Erasmus in Dublin (2016--2017); Master and scientific contributions in English \\
+\end{tabular}
+\vspace{2mm}
+
+\header{\textcolor{header}{Statistical \& IT skills}}
+\vspace*{4pt} \hspace*{-8pt} 
+\begin{tabular}{ l p{13.2cm} } %or l if it's short
+	\TagHidden{Languages:} & \Tag{\includegraphics[width=8px]{Python-logo-notext.png} Python}\Tag{\includegraphics[width=10px]{R_logo.png}}\Tag{\includegraphics[width=30px]{Stata_Logo.png}}\Tag{\includegraphics[width=20px]{SAS_logo_horiz.png}}               \\
+	\TagHidden{Data Querying:}      & \Tag{MySQL}\Tag{MongoDB}\Tag{elasticsearch}                         \\
+	\TagHidden{Data Visualisation:}   & {\Tag{Seaborn}} {\Tag{plotly}} {\Tag{Excel}}\Tag{Tableau}\Tag{Power BI} \\
+	\TagHidden{Statistics:}  & \RaggedRight \Tag{Descriptive statistics}\Tag{Dimensionality reduction}\Tag{Regression}\Tag{Classification}\Tag{Clustering}\Tag{Exploratory analysis}\Tag{Hypothesis testing}\Tag{Model validation}\Tag{Natural Language Processing}\Tag{Complex survey designs} \\ 
+	\TagHidden{Others:} & \Tag{APIs}\Tag{Web scraping}\Tag{Git} \\
+\end{tabular}
+\vspace{2mm}
+
+\header{\textcolor{header}{Personal interests}}
+
+\textbf{Visual arts}\\
+\textcolor{Paragraph}{Photography and image processing for over three years; particular interest in surrealist art and Machine Learning for art}\\
+\vspace{2mm}
+
+\textbf{Music}\\
+\textcolor{Paragraph}{Guitar for over eleven years (self-taught); always curious about the evolution and emergence of musical genres}
+\vspace{2mm}
+%\header{Project}
+%{\textbf{Test}} {\sl Java} \hfill Link\\
+%Desc\\
+%\vspace*{2mm}
+%
+%\header{Awards}
+%\textbf{Something} \hfill Awarder\\
+%Summary \hfill Date\\
+%\vspace*{2mm}
+
+\ 
+\end{document}
