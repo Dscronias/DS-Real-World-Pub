@@ -8,7 +8,7 @@ If you have more questions regarding resumes, send me an email.
 
 ## How to use
 
-It did my resume on LaTeX, because it looks very clean --- to be honest it's the only time in my life I have used LaTeX, otherwise I think it takes way too much time to do anything with it, everybody uses Word, and nowadays you can write good looking equations using Word.
+I did my resume on LaTeX, because it looks very clean --- it is the only time in my life I have used LaTeX. Otherwise I generally do not recommend using LaTeX: everybody uses Word, you can write good looking equations using Word in the same way you write equations with LaTeX.
 
 The LaTeX file is "resume EN.tex". You may have to download some packages, but the downloading/installing should be automatic when you compile the file (I use [MiKTeX](https://miktex.org/)).
 
@@ -16,7 +16,7 @@ The LaTeX file is "resume EN.tex". You may have to download some packages, but t
 
 * Usually, put professional experience first if you are applying for a job, then education comes second
   * It's the opposite when you are applying for degree
-* Put a link to personal project in the digital version of your resume (a final projec t that you did for a class, for example). If you feel it can help your application, link the final assignment you did for my class (that's actually one of the reasons why I'm making you do one). A R Shiny application can also look great
+* Put a link to personal project in the digital version of your resume (a final project that you did for a class, for example). If you feel it can help your application, link the final assignment you did for my class (that's actually one of the reasons why I'm making you do one). A R Shiny application can also look great
 * Including some quantified results from your work, in your professional experience section, is usually a good idea (e.g. I put the number of papers I've co-authored)
   * If you don't have any professional experience that you think is relevant at the moment, that's fine. You're just looking for an internship right now. But when you will be applying for your first job, try to put some results/achievements from your internship
 * Be wary of small mistakes/details: double spaces, poorly aligned paragraphs, typographical errors, mismatching fonts/colours/spacing between paragraphs... Recruiters may not notice one or two mistakes, but they quickly pile up if you are not careful enough. Attention to detail is a great skill to have.
