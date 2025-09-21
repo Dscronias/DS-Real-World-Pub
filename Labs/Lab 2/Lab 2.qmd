@@ -18,7 +18,13 @@ So try to find a dataset that seems a bit dirty, with missing data, ideally some
 
 # Goal
 
-Model the length of stay in emergency services (that is, the time difference between the date and hour of discharge, and the date and hour of entry).
+## Length of stay
+
+Gather all the datasets into a single one. Create a variable called los (length of stay): it's the time difference between the date and hour of discharge, and the date and hour of entry.
+
+## Modelling
+
+Model the length of stay in emergency services.
 
 You can use whatever you want: a generalised linear model, decision trees, knn regression, Random Forest, XGBoost, your homecooked neural network...
 
