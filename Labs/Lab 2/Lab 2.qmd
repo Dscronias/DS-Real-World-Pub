@@ -50,7 +50,7 @@ You can use whatever you want: a generalised linear model, decision trees, knn r
 
     -   Don't rely too much on AI, especially if you don't understand the solutions they propose
 
--   Only the datasets contain errors. The number of patients table, the supplementary variable table, and the data dictionary, contain no error.
+-   Only the datasets contain errors. The number of patients table, the supplementary variable table, and the data dictionary contain no error.
 
 -   Recommended order:
 
