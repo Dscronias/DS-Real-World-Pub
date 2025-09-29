@@ -6,16 +6,6 @@ editor: visual
 
 Welcome to Lab 2, in this one you will have to clean what is probably the dirtiest data you've encountered so far in your studies.
 
-I won't help you with the programming (unless you are really struggling), but I will give you expert knowledge on the data and give you some more specific tasks.
-
-Do groups of 3-4 and split up your work.
-
-# A word about the final assignment
-
-Just so you know, for your final assignment, I will expect you to do cleaning like you will do in this lab (though perhaps not on data as bad as the one in this lab).
-
-So try to find a dataset that seems a bit dirty, with missing data, ideally some errors in the variables, and that should be enough. I just want you to do some cleaning and data wrangling.
-
 # Goal
 
 ## Length of stay
@@ -24,19 +14,19 @@ Gather all the datasets into a single one. Create a variable called los (length 
 
 ## Modelling
 
-Model the length of stay in emergency services.
+Model the length of stay (the variable you just created).
 
-You can use whatever you want: a generalised linear model, decision trees, knn regression, Random Forest, XGBoost, your homecooked neural network...
+You can use whatever you want: a generalised linear model, decision trees, knn regression, Random Forest, XGBoost, your homecooked neural network... As long as you are able to interpret the results.
 
 # Deliverable
 
--   One or multiple scripts (i.e. your codes)
-
--   One document detailing all the cleaning you have done and everything that you would consider to be "bad data" in what I gave you
+-   One or multiple R scripts (i.e. your codes)
 
 # Data
 
 -   Synthetic emergency data from 8 emergency services (split in 8 files, one per service)
+
+    -   Each table is an emergency stays dataset over a few months in a emergency service. Each line should be a unique patient (unless there are errors in the data).
 
 -   Data dictionary
 
@@ -60,6 +50,30 @@ You can use whatever you want: a generalised linear model, decision trees, knn r
 
     -   Don't rely too much on AI, especially if you don't understand the solutions they propose
 
+-   Only the datasets contain errors. The number of patients table, the supplementary variable table, and the data dictionary, contain no error.
+
+-   Recommended order:
+
+    -   Importing
+
+    -   Finding duplicates
+
+    -   Merge all datasets
+
+        -   Do it as soon as you can
+
+        -   There will be a few errors specific to some datasets that will need to be solved first
+
+    -   Check for errors across all datasets
+
+        -   Errors in variable values, distributions...
+
+    -   Create new variables (if needed)
+
+    -   Check for missing values and potential outliers
+
+    -   Imputation/deletion (if needed)
+
 # Useful snippets of code
 
 Don't launch any of these, it's just to illustrate how these work.
@@ -68,7 +82,7 @@ Don't launch any of these, it's just to illustrate how these work.
 
 Put your cursor inside the parentheses of str_detect(), press Ctrl and Space (Cmd + Space for Mac users)
 
-```{r}
+```{r, eval = false}
 library(stringr)
 test_string <- c("aa_1", "aa_2", "bb_6", "dd3")
 test_string %>% str_detect() 
@@ -79,7 +93,7 @@ test_string %>% str_detect()
 
 Most functions to read data from files begin with `read`.
 
-```{r}
+```{r, eval = false}
 # A few examples
 read.csv() # Don't use this one though
 read_csv() # Use this one (:
@@ -93,7 +107,7 @@ read_csv() # Check all the options in those functions, some might be useful...
 
 ## Selecting
 
-```{r}
+```{r, eval = false}
 df <- 
   df %>% 
   select(age) # Keep only age
@@ -107,7 +121,7 @@ df <-
 
 ## Filtering
 
-```{r}
+```{r, eval = false}
 df <- 
   df %>% 
   filter(age < 150) # One condition: age must be below 150
@@ -127,7 +141,7 @@ Note that, to specify one specific value here, we use `==` and not `=`
 
 ## Modifying
 
-```{r}
+```{r, eval = false}
 df <- 
   df %>% 
   mutate(
@@ -150,7 +164,7 @@ df <-
 
 This gets rid of duplicates.
 
-```{r}
+```{r, eval = false}
 df <- 
   df %>% 
   distinct(id)
@@ -164,7 +178,7 @@ You will have to use this one somewhere. Good luck. (: <https://tidyr.tidyverse.
 
 Some easy mean imputation can be done using case_when()
 
-```{r}
+```{r, eval = false}
 df <- 
   df %>% 
   mutate(
@@ -184,5 +198,3 @@ You will have to figure out the rest yourselves. You can:
     -   Use this trained model to predict the missing data in the full dataset
 
 -   Other methods proposed in the last class (though just doing one may take you a lot of time)
-
-# Password: 4d5\^\$zAP\\\\\~#dDF5
