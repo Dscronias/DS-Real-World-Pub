@@ -17,7 +17,7 @@ Both are fine. Do whatever you prefer.
 If you do not have an idea of a structure, an IMRaD structure always works. This is a typical structure for research papers:
 
 - **Introduction**. What is the question you want to ask? why it is relevant? Can you give some context? Some other work on the same subject?
-- **Methodology**.  What data will you use? Where does it come from? How was it gathered? How many observations, variables? What variables? What analyses will you do? Please talk about your data cleaning/any modifications you have made to your data here : what did you have to modify, were there missing variables, what did you do with your missing variables, were there weird values, or outliers, etc... Also, please talk about any initial hypotheses you have (e.g. we expect variable X to be positively correlated with Y, or negatively correlated, a non-linear relationship between X and Y, no significant impact of X on Y, higher sales during the holiday period, higher vaccine hesitancy among women, lower life expectancy in poorer neighbourhoods...).
+- **Methodology**.  What data will you use? Where does it come from? How was it gathered? How many observations, variables? What variables? What analyses will you do? Please talk about your data cleaning/any modifications you have made to your data here : what did you have to modify, were there missing variables, what did you do with your missing variables, were there weird values, or outliers, etc... Also, please talk about any initial hypotheses you have (e.g. we expect variable X to be positively correlated with Y, or negatively correlated, a non-linear relationship between X and Y, no significant impact of X on Y, higher sales during the holiday period, higher vaccine hesitancy among women, lower life expectancy in poorer neighbourhoods...). Justify your choice of model.
 - **Results**. Descriptive statistics, regressions, tables, graphs, etc., go here. Describe these results. At this stage, students usually write about *every single result they find*: it's not necessary. We are able fully capable of reading your tables, you know. Just put your tables, and write about **what is important** in your results.
 - **Discussion**. Here, interpret your results. How do your analyses help answer your initial question? If there is other research on the same subject, do you have similar results? Different ones? Was their methodology different? Talk about the limits of your analyses, potential biases.
 
@@ -42,11 +42,11 @@ See **Class 2**.
 
 **5.** Perform analyses to answer your initial question (univariate, bivariate, multivariate if needed). For IMRaD: this would be your results section.
 
-**See Lab 2**. Start with a quick, overall description of the distributions of the variables. Then you can start looking at associations. So this progression: univariate analysis (1 variable) > bivariate analysis (2 variables) > multivariate analysis (multiple variables).
+**See Lab 3**. Start with a quick, overall description of the distributions of the variables. Then you can start looking at associations. So this progression: univariate analysis (1 variable) > bivariate analysis (2 variables) > multivariate analysis (multiple variables).
 
 **6.** Do some data visualisation. Interpret your results. Put data visualisations in the results section. Any interpretation go in the Discussion section.
 
-See **Lab 2 & 3**. You can do a R Shiny if you want (use the skeleton we did for Lab 3). If you manage to make it look good, it can be a good deliverable to show to potential recruiters!
+See **Lab 3 & 4**. You can do a R Shiny if you want (use the skeleton we did for Lab 3). If you manage to make it look good, it can be a good deliverable to show to potential recruiters!
 
 ## Datasets
 
