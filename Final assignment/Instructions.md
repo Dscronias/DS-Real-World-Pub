@@ -1,9 +1,32 @@
 # Final assignment
 
-**Due date**: Probably in January, at the latest.
-Send it to this email address: [dimitri.scronias@univ-amu.fr](mailto:dimitri.scronias@univ-amu.fr).
+**Due date**:31st January 23:59:59.
+Send everything to this email address: [dimitri.scronias@univ-amu.fr](mailto:dimitri.scronias@univ-amu.fr).
 
-Send me your code, your data and a written report.
+It's in two parts: a written report, and an oral presentation.
+Written report includes: your code, your data, written report.
+Oral presentation includes: a powerpoint presentation, a one-pager and a recording of you presenting (it can be audio only, no need for video unless you want to present an interactive tool).
+
+# Oral presentation
+
+Present your work as if you were presenting it to your boss. As your boss, I am mostly interested in your results and the insights you got from them; I can understand some basic statistics (e.g. regression, correlation, p-values...), but you should keep the technicalities low, as that is not the focus.
+
+When I will listen to your presentation, **I will not have read your written report yet.** My only knowledge of your project will be from the one-pager you will have written.
+
+## One-pager
+
+A short summary of your whole work for me to read before I start listening to your presentation. It should not exceed a page (one-sided).
+It should introduce your subject, question, methodology, some key results and insights, and the limits of your analysis.
+
+## Presentation content & recording
+
+Aim for 8-10 minutes. It MUST NOT exceed 10 minutes. With ten minutes of content, you shouldn't have more than 10 slides (which would already be a lot).
+10 minutes will be very short, so focus on the most important parts of your project. Aim for clarity and conciseness.
+
+As for the recording, you can just record yourself with the microphone on your phone; speak loud and clear into your microphone. If you are just recording your voice, say out loud when you change slides.
+If you take a video, make sure you are audible.
+
+# Written report
 
 ## What should my report look like? What do I put in it?
 
@@ -35,7 +58,6 @@ Just check the variables and if there is missing data, to be sure than you can u
 
 In the class I have mostly covered situations where your dependent variable is in your data (so, supervised Machine Learning/regression analysis). If you want to try exploratory analyses, you can do clustering instead. It is not that complicated, and there are a lot of resources online. You could try [hierarchical clustering](https://uc-r.github.io/hc_clustering)
 
-
 **4.** Clean the data: check for missing data, aberrant values, think about potential biases from your cleaning.
 
 See **Class 2**.
@@ -52,7 +74,6 @@ See **Lab 3 & 4**. You can do a R Shiny if you want (use the skeleton we did for
 
 Websites where you may find datasets:
 
-- [Scraped Airbnb data](https://insideairbnb.com/)
 - [UC Irvine ML repo](https://archive.ics.uci.edu/datasets?NumInstances=1000-inf&skip=0&take=10&sort=desc&orderBy=NumHits&search=)
 - [AskAManager Salary Survey](https://docs.google.com/spreadsheets/d/1PXn7AoKOmZ-Za4Bz_-4tfoNfiddrLRQGWunM8F53Th8/edit?resourcekey=&gid=1245463581#gid=1245463581)
 - [Financial well-being survey data](https://www.consumerfinance.gov/data-research/financial-well-being-survey-data/) (great source, don’t forget to download the file codebook, on top of the data)
@@ -61,14 +82,14 @@ Websites where you may find datasets:
 - [Airbnb listings](https://insideairbnb.com/fr/get-the-data/)
 - [Mass mobilization data](https://massmobilization.github.io), you can combine it with the [democracy ratings dataset](https://www.v-dem.net/data/the-v-dem-dataset/) and the [HDI data](https://hdr.undp.org/sites/default/files/2023-24_HDR/HDR23-24_Composite_indices_complete_time_series.csv)
 
-## Grading
+# Grading
 
 Up to 10 points for the final report.
 Up to 10 points for the oral presentation.
 
 Final note is out of 20, in the typical French grading system.
 
-## Frequently asked questions
+# Frequently asked questions
 
 **Q.** Can I use a dataset on which I have previously worked on? (e.g. for another project)
 **A.** Yes. Just don't use the one from Lab 2, I want to use it as an example.
