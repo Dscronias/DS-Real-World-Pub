@@ -1,34 +1,39 @@
 # Final assignment
 
-**Due date**:31st January 23:59:59.
+**Due date**: 31st January 23:59:59.
 Send everything to this email address: [dimitri.scronias@univ-amu.fr](mailto:dimitri.scronias@univ-amu.fr).
 
 It's in two parts: a written report, and an oral presentation.
 Written report includes: your code, your data, written report.
 Oral presentation includes: a powerpoint presentation, a one-pager and a recording of you presenting (it can be audio only, no need for video unless you want to present an interactive tool).
 
-# Oral presentation
+---
+
+## Oral presentation
 
 Present your work as if you were presenting it to your boss. As your boss, I am mostly interested in your results and the insights you got from them; I can understand some basic statistics (e.g. regression, correlation, p-values...), but you should keep the technicalities low, as that is not the focus.
 
 When I will listen to your presentation, **I will not have read your written report yet.** My only knowledge of your project will be from the one-pager you will have written.
 
-## One-pager
+### One-pager
 
 A short summary of your whole work for me to read before I start listening to your presentation. It should not exceed a page (one-sided).
+
 It should introduce your subject, question, methodology, some key results and insights, and the limits of your analysis.
 
-## Presentation content & recording
+### Presentation content & recording
 
-Aim for 8-10 minutes. It MUST NOT exceed 10 minutes. With ten minutes of content, you shouldn't have more than 10 slides (which would already be a lot).
+Aim for 8-10 minutes. **It must not exceed 10 minutes.** With 10 minutes of content, you shouldn't have more than 10 slides (which would already be a lot).
+
 10 minutes will be very short, so focus on the most important parts of your project. Aim for clarity and conciseness.
 
-As for the recording, you can just record yourself with the microphone on your phone; speak loud and clear into your microphone. If you are just recording your voice, say out loud when you change slides.
-If you take a video, make sure you are audible.
+As for the recording, you can just record yourself with the microphone on your phone; speak loud and clear into your microphone. If you are just recording your voice, say out loud when you change slides. If you take a video, make sure you are audible.
 
-# Written report
+---
 
-## What should my report look like? What do I put in it?
+## Written report
+
+### What should my report look like? What do I put in it?
 
 For the report, you can either:
 
@@ -44,7 +49,7 @@ If you do not have an idea of a structure, an IMRaD structure always works. This
 - **Results**. Descriptive statistics, regressions, tables, graphs, etc., go here. Describe these results. At this stage, students usually write about *every single result they find*: it's not necessary. We are able fully capable of reading your tables, you know. Just put your tables, and write about **what is important** in your results.
 - **Discussion**. Here, interpret your results. How do your analyses help answer your initial question? If there is other research on the same subject, do you have similar results? Different ones? Was their methodology different? Talk about the limits of your analyses, potential biases.
 
-## What do I do?
+### What do I do?
 
 **1.** Find a messy dataset with at least 10 variables (features), and >1K observations (instances).
 
@@ -70,6 +75,8 @@ See **Class 2**.
 
 See **Lab 3 & 4**. You can do a R Shiny if you want (use the skeleton we did for Lab 3). If you manage to make it look good, it can be a good deliverable to show to potential recruiters!
 
+---
+
 ## Datasets
 
 Websites where you may find datasets:
@@ -82,14 +89,14 @@ Websites where you may find datasets:
 - [Airbnb listings](https://insideairbnb.com/fr/get-the-data/)
 - [Mass mobilization data](https://massmobilization.github.io), you can combine it with the [democracy ratings dataset](https://www.v-dem.net/data/the-v-dem-dataset/) and the [HDI data](https://hdr.undp.org/sites/default/files/2023-24_HDR/HDR23-24_Composite_indices_complete_time_series.csv)
 
-# Grading
+## Grading
 
 Up to 10 points for the final report.
 Up to 10 points for the oral presentation.
 
 Final note is out of 20, in the typical French grading system.
 
-# Frequently asked questions
+## Frequently asked questions
 
 **Q.** Can I use a dataset on which I have previously worked on? (e.g. for another project)
 **A.** Yes. Just don't use the one from Lab 2, I want to use it as an example.
