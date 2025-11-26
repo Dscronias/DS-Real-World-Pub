@@ -29,7 +29,7 @@ The Union Démocratique du Québecorse is facing economic difficulties. Its demo
 
 Fortunately, Brunon Le Mar has been dismissed and sent far away to reflect on his mismanagement. Unfortunately, you have been randomly chosen to replace him and Jean-François will publicly pin the whole economic collapse of the country on you if you don't fix their mess.
 
-Management of emergency services fall under the responsibility of your ministry, and you think you can cut some costs here and there. This year, the total public spending for emergency services reached 435,751,480€ and is not expected to rise next year. As part of your plan to reduce public deficit to 2% next year, you aim to reduce the public spending for emergency services by at least 3%.
+Management of emergency services fall under the responsibility of your ministry, and you think you can cut some costs here and there. This year, the total public spending for emergency services reached 452,090,583€ and is not expected to rise next year. As part of your plan to reduce public deficit to 2% next year, you aim to reduce the public spending for emergency services by at least 3%.
 
 There is not much you can ethically do to reduce public spending on this matter. However, focusing on patients that enter emergency services without going through the SAS (Service d'Accès aux Soins) is one lever you can pull to reduce spending: they are known to affect costs, and length of stay (notably, stays over 8h), but you don't know by how much.
 
