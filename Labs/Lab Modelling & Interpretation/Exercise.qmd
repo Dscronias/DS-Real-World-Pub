@@ -121,9 +121,11 @@ These are suggestions.
 
 -   Univariate: check distributions of all variables, notably cost. Compare these distributions by service
 
+-   Tabyl is useful for categorical variables: <https://cran.r-project.org/web/packages/janitor/vignettes/tabyls.html>
+
 -   Bivariate
 
-    -   two-way tables between length of stay (binary) and categorical variables
+    -   two-way tables between length of stay (binary) and categorical variables: use tabyl <https://cran.r-project.org/web/packages/janitor/vignettes/tabyls.html>
 
     -   Distributions of continuous explanatory variables by length of stay (binary)
 
@@ -155,7 +157,7 @@ These are suggestions.
 
         -   How would costs vary if all patients came through the SAS? (i.e. all patients with sas == "No" were actually sas == "Yes"?)
 
-        -   Use marginaleffects package for this
+        -   Use marginaleffects package for this: <https://marginaleffects.com/chapters/comparisons.html>
 
     -   Variable importance
 
@@ -163,4 +165,4 @@ These are suggestions.
 
         -   For costs, compare your results with, for example, a Random Forest model
 
-        -   Use DALEX for this
+        -   Use DALEX for this: <https://ema.drwhy.ai/featureImportance.html>

@@ -8,6 +8,8 @@ Welcome to Lab 2, in this one you will have to clean what is probably the dirtie
 
 # Goal
 
+Download data.zip and extract everything from it. Create a R script (or R Markdown in it).
+
 ## Length of stay
 
 Gather all the datasets into a single one. Create a variable called los (length of stay): it's the time difference between the date and hour of discharge, and the date and hour of entry.
