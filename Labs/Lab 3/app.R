@@ -12,6 +12,7 @@ library(bslib)
 library(tidyverse)
 library(DT)
 library(plotly)
+library(bsicons)
 
 # Data #########################################################################
 
@@ -33,12 +34,20 @@ df3 <-
     region = c("Auverge-Rhône-Alpes", "Hauts-de-France", "Auverge-Rhône-Alpes", "Provence-Alpes-Côte d'Azur")
   )
 
+df4 <- 
+  tibble(
+    x = rnorm(500, 2, 10),
+    y = rnorm(500, 1, 1.5),
+    z = rnorm(500, 5, 6),
+    team = sample(c("Red", "Blue"), 500, replace = TRUE, prob = c(0.25, 0.75)),
+    names = randomNames::randomNames(500)
+  )
 # User inteface ################################################################
 ui <- page_navbar(
   title = "TITLE (REPLACE IT)", # Title here
   
   # Your pages
-  ## PAGE 1
+  ## PAGE 1 -----------
   nav_panel(
     title = "Welcome",
     h1("That's a title (H1)"),
@@ -58,7 +67,7 @@ ui <- page_navbar(
     )
   ),
   
-  ## PAGE 2
+  ## PAGE 2 ---------------
   nav_panel(
     title = "Page 2",
     
@@ -93,27 +102,49 @@ ui <- page_navbar(
     )
   ),
   
-  ## PAGE 2
+  ## PAGE 3 -------------
   nav_panel(
     title = "Page 3",
+    layout_columns(
+      fill = FALSE,
+      value_box(
+        title = "Sum of X",
+        value = textOutput("value_card_1"), # List here https://icons.getbootstrap.com/
+        showcase = bs_icon("plus"),
+        theme = "red"
+      ),
+      value_box(
+        title = "Mean of X",
+        value = textOutput("value_card_2"),
+        showcase = bs_icon("calculator"),
+        theme = value_box_theme(bg = "#ffbbbb", fg = "#FF0000")
+      )
+    ),
     dataTableOutput(outputId = "table_2")
   ),
   
-  ## PAGE 3
+  ## PAGE 4 -------------
   nav_panel(
-    title = "Page 4"
+    title = "Page 4",
+    plotlyOutput(outputId = "plot_3d")
   ),
   
   # Space in header
   nav_spacer(),
   
-  # Stuff on the right
+  ## Stuff on the right --------------
   # nav_item(input_dark_mode()), # Dark mode, doesn't work well with every theme
   nav_menu(
-    title = "Links"
+    title = "Links",
+    # align = "right", # Uncomment this and see the difference
+    nav_item(
+      tags$a(
+        bs_icon("github"), "Github", href = "https://github.com/Dscronias/DS-Real-World-Pub/"
+      )
+    )
   ),
   
-  # Sidebar
+  ## Sidebar -------------------
   # This will be common to all pages
   # You can make individual sidebars for each page but it is more complicated
   sidebar = sidebar(
@@ -197,7 +228,22 @@ server <- function(input, output, session) {
     df2_reactive()
   })
   
+  ## Value cards ###############################################################
+  
+  output$value_card_1 <- renderText(
+    df2_reactive() %>% 
+      summarise(x = sum(x)) %>%
+      pull(x)
+  )
+  
+  output$value_card_2 <- renderText(
+    df2_reactive() %>% 
+      summarise(x = mean(x)) %>%
+      pull(x)
+  )
+  
   ## Graphs ####################################################################
+  
   output$plot_1 <- renderPlot({
     df %>% 
       ggplot(
@@ -233,6 +279,20 @@ server <- function(input, output, session) {
         type = 'scatter',
         mode = 'markers'
       )
+  })
+  
+  output$plot_3d <- renderPlotly({
+    df4 %>% 
+      plot_ly(
+        x = ~x,
+        y = ~y,
+        z = ~z,
+        color = ~team,
+        text = ~names,
+        hoverinfo = "names",
+        colors = c("#7777FF", "#FF7777")
+      ) %>% 
+      add_markers()
   })
 }
 
