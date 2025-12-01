@@ -13,8 +13,48 @@ library(tidyverse)
 library(DT)
 library(plotly)
 library(bsicons)
+library(broom)
+library(marginaleffects)
+library(DALEX)
 
-# Data #########################################################################
+# Data exercise ################################################################
+
+# Setup
+df_es <-
+  read_rds("final_dataframe.v3.rds") %>% 
+  mutate(
+    los_8h =
+      case_when(
+        los >= 480 ~ "Yes",
+        los < 480 ~ "No"
+      ) %>%
+      as_factor(),
+    severity = as.numeric(severity),
+    ald = case_when(ald == 0 ~ "No", .default = "Yes"),
+    arrival_mode_sas = case_when(
+      arrival_mode == "Personal" & sas == "Yes" ~ "Personal (SAS)",
+      arrival_mode == "Personal" & sas == "No" ~ "Personal (not SAS)",
+      .default = arrival_mode
+    ),
+    arrival_mode_sas = fct_relevel(arrival_mode_sas, "Personal (SAS)"),
+    discharge_mode = fct_relevel(discharge_mode, "Home")
+  )
+
+# Logistic regression
+res_logit <- 
+  glm(
+    los_8h ~ service_code + discharge_mode + arrival_mode_sas + age + complexity + ald,
+    family = "binomial",
+    data = df_es
+  )
+
+# Odds ratios
+res_logit_or <- tidy(res_logit, exponentiate = TRUE, conf.int = TRUE)
+
+# Risk ratios
+res_logit_rr <- avg_comparisons(res_logit, comparison = "lnratioavg", transform = exp)
+
+# Data example #################################################################
 
 df <- 
   tibble(
@@ -42,6 +82,7 @@ df4 <-
     team = sample(c("Red", "Blue"), 500, replace = TRUE, prob = c(0.25, 0.75)),
     names = randomNames::randomNames(500)
   )
+
 # User inteface ################################################################
 ui <- page_navbar(
   title = "TITLE (REPLACE IT)", # Title here
