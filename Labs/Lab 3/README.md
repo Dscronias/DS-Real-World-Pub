@@ -57,6 +57,7 @@ Put the following in the dashboard:
 - A few univariate and/or bivariate graphs
 - A table that compares the odds ratios and risk ratios from the regression
 - A dot-and-whisker plot of the risk ratios (estimate and 95% CI)
+    - In ggplot, you can combine a [geom_point()](https://ggplot2.tidyverse.org/reference/geom_point.html) with a [geom_errorbar()](https://ggplot2.tidyverse.org/reference/geom_linerange.html)
 - One 3D graph with cost, length of stay and age (or relative_n_entries)
 
 I want to be able to filter depending on these groups:
