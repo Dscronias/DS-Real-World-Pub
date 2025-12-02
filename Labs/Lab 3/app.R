@@ -17,12 +17,43 @@ library(broom)
 library(marginaleffects)
 library(DALEX)
 
+# Functions
+n_patients <- function(data, p_service, h_entry, h_exit) {
+  data %>% 
+    filter(
+      service == p_service & 
+        entry >= h_entry & 
+        exit <= h_exit
+    ) %>% 
+    summarise(n_patients = n()) %>% 
+    pull(n_patients)
+}
+
 # Data exercise ################################################################
 
 # Setup
 df_es <-
-  read_rds("final_dataframe.v3.rds") %>% 
+  read_rds("final_dataframe.v3.rds")
+df_es <-
+  df_es %>% 
   mutate(
+    entry_m2 = entry - hours(2) # This is entry minus 2 hours
+  ) %>% 
+  rowwise() %>%
+  mutate(
+    number_patients = n_patients(df_es, service, entry_m2, exit)
+  ) %>% 
+  ungroup() %>% 
+  group_by(service) %>% 
+  mutate(
+    time = difftime(max(exit), min(entry), units = "hours"),
+    n_patients_service = n(),
+    patients_per_hour = n_patients_service / as.numeric(time)
+  ) %>% 
+  ungroup() %>% 
+  mutate(
+    hours_spent = difftime(exit, entry_m2, units = "hours"),
+    relative_n_entries = (number_patients/as.numeric(hours_spent))/patients_per_hour,
     los_8h =
       case_when(
         los >= 480 ~ "Yes",
@@ -177,7 +208,6 @@ ui <- page_navbar(
   # nav_item(input_dark_mode()), # Dark mode, doesn't work well with every theme
   nav_menu(
     title = "Links",
-    # align = "right", # Uncomment this and see the difference
     nav_item(
       tags$a(
         bs_icon("github"), "Github", href = "https://github.com/Dscronias/DS-Real-World-Pub/"
