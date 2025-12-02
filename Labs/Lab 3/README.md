@@ -72,18 +72,6 @@ I want to be able to filter depending on these groups:
 
 Make it look good.
 
-## Other possible content that comes to my mind
-
-- Information about ALD patients vs. non-ALD
-  - Age
-  - Differences in costs
-  - Severity/complexity
-  - Length of stay
-- About costs, by:
-  - Age
-  - Length of stay
-  - Discharge mode
-
 ## Additional Shiny options I haven't talked about
 
 ### [Theming](https://rstudio.github.io/bslib/articles/theming/index.html)
